@@ -2,7 +2,7 @@ const mineflayer = require('mineflayer');
 const express = require('express');
 const app = express();
 
-app.get("/", (req, res) => res.send("Bot Bedrock 24/7 đang chạy bản 1.26.3!"));
+app.get("/", (req, res) => res.send("Bot Bedrock 24/7 đang online bản 1.26.3.1!"));
 app.listen(3000, () => console.log("Web server ready!"));
 
 function createBot() {
@@ -11,15 +11,14 @@ function createBot() {
         port: 47884,
         username: 'BotTreo247',
         auth: 'offline',
-        // CẬP NHẬT VERSION Ở ĐÂY
+        // PHẢI CHÍNH XÁC LÀ 1.26.3
         version: '1.26.3', 
         connectTimeout: 60000 
     });
 
     bot.on('spawn', () => {
-        console.log('--- Bot đã vào server bản 1.26.3 thành công! ---');
+        console.log('--- ĐÃ KẾT NỐI THÀNH CÔNG VÀO SERVER 1.26.3.1 ---');
         
-        // Nhảy mỗi 1 phút để chống AFK
         const jumpInterval = setInterval(() => {
             if (bot.entity) {
                 bot.setControlState('jump', true);
@@ -35,9 +34,9 @@ function createBot() {
     });
 
     bot.on('error', (err) => {
-        console.log('Lỗi:', err.message);
-        // Nếu server chưa mở (ETIMEDOUT) hoặc lỗi khác, đợi 1 phút rồi thử lại
-        setTimeout(createBot, 60000);
+        console.log('Lỗi hệ thống:', err.message);
+        // Tự động thử lại nếu server chưa mở hoặc lỗi protocol
+        setTimeout(createBot, 30000);
     });
 }
 
