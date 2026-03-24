@@ -12,7 +12,7 @@ function createBot() {
         username: 'BotTreo247',
         auth: 'offline',
         // CẬP NHẬT VERSION Ở ĐÂY
-        version: '1.26.3.1', 
+        version: '1.26.3', 
         connectTimeout: 60000 
     });
 
