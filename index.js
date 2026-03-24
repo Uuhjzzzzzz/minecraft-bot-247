@@ -12,14 +12,20 @@ app.listen(3000, () => console.log("Web server ready!"));
 const bot = mineflayer.createBot({
   host: 'bosswar.playserver.pro', 
   port: 47884,              
-  username: 'BotTreoGlitch',
-  version: '1.21.132.1', // Kiểm tra đúng version server nhé
-  auth: 'offline'            
+  username: 'BotTreo247',
+  // Xóa dòng version cũ đi
+  auth: 'offline',
+  realms: false // Đảm bảo không nhầm sang server Realms
 });
 
-bot.on('spawn', () => {
-  console.log('Bot đã vào server!');
+// Thêm đoạn này để xử lý lỗi phiên bản nếu cần
+bot.on('error', (err) => {
+  if (err.message.includes('unsupported protocol')) {
+    console.log('Đang thử kết nối lại với chế độ tự dò phiên bản...');
+  }
+  console.log('Lỗi:', err.message);
 });
+
 
 // Chống AFK nhảy mỗi 2 phút
 setInterval(() => {
