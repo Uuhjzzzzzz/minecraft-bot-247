@@ -2,36 +2,43 @@ const mineflayer = require('mineflayer');
 const express = require('express');
 const app = express();
 
-// Tạo web để UptimeRobot "gõ cửa"
-app.get("/", (request, response) => {
-  response.send("Bot Bedrock đang online!");
-});
+app.get("/", (req, res) => res.send("Bot đang chờ server mở..."));
 app.listen(3000, () => console.log("Web server ready!"));
 
-// Cấu hình Bot - Nhớ sửa thông tin server của bạn ở đây
-const bot = mineflayer.createBot({
-  host: 'bosswar.playserver.pro', 
-  port: 47884,              
-  username: 'BotTreo247',
-  // Xóa dòng version cũ đi
-  auth: 'offline',
-  realms: false // Đảm bảo không nhầm sang server Realms
-});
+function createBot() {
+    const bot = mineflayer.createBot({
+        host: 'bosswar.playserver.pro',
+        port: 47884,
+        username: 'BotTreo247',
+        auth: 'offline',
+        // Thêm dòng này để bot không bị văng khi server chưa mở
+        connectTimeout: 30000 
+    });
 
-// Thêm đoạn này để xử lý lỗi phiên bản nếu cần
-bot.on('error', (err) => {
-  if (err.message.includes('unsupported protocol')) {
-    console.log('Đang thử kết nối lại với chế độ tự dò phiên bản...');
-  }
-  console.log('Lỗi:', err.message);
-});
+    bot.on('spawn', () => {
+        console.log('Bot đã vào server thành công!');
+        // Chỉ cho phép nhảy khi bot đã vào game (spawn)
+        const jumpInterval = setInterval(() => {
+            if (bot.entity) {
+                bot.setControlState('jump', true);
+                setTimeout(() => bot.setControlState('jump', false), 500);
+            }
+        }, 60000);
+        
+        bot.on('end', () => {
+            clearInterval(jumpInterval);
+            console.log('Mất kết nối, đang thử lại sau 30 giây...');
+            setTimeout(createBot, 30000);
+        });
+    });
 
+    bot.on('error', (err) => {
+        console.log('Lỗi:', err.message);
+        if (err.code === 'ETIMEDOUT') {
+            console.log('Server chưa mở, sẽ thử lại sau 1 phút...');
+            setTimeout(createBot, 60000);
+        }
+    });
+}
 
-// Chống AFK nhảy mỗi 2 phút
-setInterval(() => {
-  bot.setControlState('jump', true);
-  setTimeout(() => bot.setControlState('jump', false), 500);
-}, 120000);
-
-bot.on('error', (err) => console.log('Lỗi kết nối:', err));
-  
+createBot();
